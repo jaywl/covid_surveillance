@@ -5,7 +5,7 @@
 ###### Dilip Makhija, Charles K. Cooper, Matthew H. Samore, Lindsay T. Keegan"
 
 temp_output_dir<-"/Users/user/Desktop/temp_output/"## change to your directory of choice for output of function (if run)
-temp_plot_dir<-"/Users/user/Desktop/plots/" ## change to a directory in which to save plots
+temp_plot_dir<-"/Users/user/Desktop/plots/" ## change to a directory to hold plots
 
 #### to generate the data yourself, iterate the following function with parameters of your choice
 #### (ALERT long run time on normal computers, so uncomment to run):
@@ -46,6 +46,7 @@ s8<-read.csv(paste0(basedir,"s8.csv"))
 s9<-read.csv(paste0(basedir,"s9.csv"))
 s10<-read.csv(paste0(basedir,"s10.csv"))
 s11<-rbind(s1,s2,s3,s4,s5,s6,s7,s8,s9,s10)
+rm(s1,s2,s3,s4,s5,s6,s7,s8,s9,s10) ## free up memory
 
 ## making figure 2 (and supplemental epidemic curve plots)
 tps<-c(0.01,0.02,0.05,0.10) ## proportions testing (same as testprops in function parameters)
@@ -142,6 +143,7 @@ m8<-read.csv(paste0(basedir,"m8.csv"))
 m9<-read.csv(paste0(basedir,"m9.csv"))
 m10<-read.csv(paste0(basedir,"m10.csv"))
 m11<-rbind(m1,m2,m3,m4,m5,m6,m7,m8,m9,m10)
+rm(m1,m2,m3,m4,m5,m6,m7,m8,m9,m10) ## free up memory
 
 mss.d<-m11[m11$location=="dorm",]
 mss.nh<-m11[m11$location=="NH",]
@@ -153,6 +155,7 @@ baseline.hospitalizations.d<-mean(mss.d$hospitalizations[with(mss.d,test.strateg
 baseline.hospitalizations.nh<-mean(mss.nh$hospitalizations[with(mss.nh,test.strategy=="none")])
 ## to get deaths averted
 baseline.deaths.d<-mean(mss.d$deaths[with(mss.d,test.strategy=="none")])
+baseline.deaths.nh<-mean(mss.nh$deaths[with(mss.nh,test.strategy=="none")])
 
 ##figure 3
 require(gplots) ## helpful plotting package. Thanks to Warnes, Bolker, Bonebakker, et al. https://github.com/talgalili/gplots
@@ -193,52 +196,53 @@ to PCR"),ylim=c(0,70),main="Residence Hall",las=1,gap=0)
 
 ##Figure S1
 
-{par(mfrow=c(1,2))
+{par(mfrow=c(2,2))
   ## hosps and deaths averted are proportions of infections, so plots look the same. But if curious:
-#   plotmeans(100*(baseline.hospitalizations.d-hospitalizations)/baseline.hospitalizations.d~test.strategy,mss.d[mss.d$test.strategy!="none" & mss.d$prop.testing==0.01,],
-#             connect=FALSE,barcol="gray",pch=16,cex=2.5,ylab="% Hospitalizations Averted",xlab="Testing Strategy",
-#             n.label=FALSE,legends=c("antigen","PCR","Reflex to Antigen","Reflex Symp.
-# to PCR"),ylim=c(0,100),main="Residence Hall")
-#   plotmeans(100*(baseline.hospitalizations.d-hospitalizations)/baseline.hospitalizations.d~test.strategy,mss.d[mss.d$test.strategy!="none" & mss.d$prop.testing==0.02,],
-#             col="blue",add=TRUE,connect=FALSE,barcol="lightblue",pch=16,cex=2.5,n.label=FALSE,xaxt="n")
-#   plotmeans(100*(baseline.hospitalizations.d-hospitalizations)/baseline.hospitalizations.d~test.strategy,mss.d[mss.d$test.strategy!="none" & mss.d$prop.testing==0.05,],
-#             col="green",add=TRUE,connect=FALSE,barcol="light green",pch=16,cex=2.5,n.label=FALSE,xaxt="n")
-#   plotmeans(100*(baseline.hospitalizations.d-hospitalizations)/baseline.hospitalizations.d~test.strategy,mss.d[mss.d$test.strategy!="none" & mss.d$prop.testing==0.10,],
-#             col="red",add=TRUE,connect=FALSE,barcol="pink",pch=16,cex=2.5,n.label=FALSE,xaxt="n")
-#
-#   plotmeans(100*(baseline.hospitalizations.nh-hospitalizations)/baseline.hospitalizations.nh~test.strategy,mss.nh[mss.nh$test.strategy!="none" & mss.nh$prop.testing==0.01,],
-#             connect=FALSE,barcol="gray",pch=16,cex=2.5,ylab="% Hospitalizations Averted",xlab="Testing Strategy",
-#             n.label=FALSE,legends=c("antigen","PCR","Reflex to Antigen","Reflex Symp.
-# to PCR"),ylim=c(0,100),main="Nursing Home")
-#   plotmeans(100*(baseline.hospitalizations.nh-hospitalizations)/baseline.hospitalizations.nh~test.strategy,mss.nh[mss.nh$test.strategy!="none" & mss.nh$prop.testing==0.02,],
-#             col="blue",add=TRUE,connect=FALSE,barcol="lightblue",pch=16,cex=2.5,n.label=FALSE,xaxt="n")
-#   plotmeans(100*(baseline.hospitalizations.nh-hospitalizations)/baseline.hospitalizations.nh~test.strategy,mss.nh[mss.nh$test.strategy!="none" & mss.nh$prop.testing==0.05,],
-#             col="green",add=TRUE,connect=FALSE,barcol="light green",pch=16,cex=2.5,n.label=FALSE,xaxt="n")
-#   plotmeans(100*(baseline.hospitalizations.nh-hospitalizations)/baseline.hospitalizations.nh~test.strategy,mss.nh[mss.nh$test.strategy!="none" & mss.nh$prop.testing==0.10,],
-#             col="red",add=TRUE,connect=FALSE,barcol="pink",pch=16,cex=2.5,n.label=FALSE,xaxt="n")
-#
+  ##hospitalizations
+  plotmeans(100*(baseline.hospitalizations.d-hospitalizations)/baseline.hospitalizations.d~test.strategy,mss.d[mss.d$test.strategy!="none" & mss.d$prop.testing==0.01,],
+            connect=FALSE,barcol="gray",pch=16,cex=0.8,ylab="% Hospitalizations Averted",xlab="Testing Strategy",
+            ci.label=TRUE,digits=1,gap=0,n.label=FALSE,legends=c("antigen","PCR","Reflex to Antigen","Reflex Symp.
+to PCR"),ylim=c(0,100),main="Residence Hall")
+  plotmeans(100*(baseline.hospitalizations.d-hospitalizations)/baseline.hospitalizations.d~test.strategy,mss.d[mss.d$test.strategy!="none" & mss.d$prop.testing==0.02,],
+            ci.label=TRUE,digits=1,gap=0,col="blue",add=TRUE,connect=FALSE,barcol="lightblue",pch=16,cex=0.8,n.label=FALSE,xaxt="n")
+  plotmeans(100*(baseline.hospitalizations.d-hospitalizations)/baseline.hospitalizations.d~test.strategy,mss.d[mss.d$test.strategy!="none" & mss.d$prop.testing==0.05,],
+            ci.label=TRUE,digits=1,gap=0,col="green",add=TRUE,connect=FALSE,barcol="light green",pch=16,cex=0.8,n.label=FALSE,xaxt="n")
+  plotmeans(100*(baseline.hospitalizations.d-hospitalizations)/baseline.hospitalizations.d~test.strategy,mss.d[mss.d$test.strategy!="none" & mss.d$prop.testing==0.10,],
+            ci.label=TRUE,digits=1,gap=0,col="red",add=TRUE,connect=FALSE,barcol="pink",pch=16,cex=0.8,n.label=FALSE,xaxt="n")
+
+  plotmeans(100*(baseline.hospitalizations.nh-hospitalizations)/baseline.hospitalizations.nh~test.strategy,mss.nh[mss.nh$test.strategy!="none" & mss.nh$prop.testing==0.01,],
+            connect=FALSE,barcol="gray",pch=16,cex=0.8,ylab="% Hospitalizations Averted",xlab="Testing Strategy",
+            ci.label=TRUE,digits=1,gap=0,n.label=FALSE,legends=c("antigen","PCR","Reflex to Antigen","Reflex Symp.
+to PCR"),ylim=c(0,100),main="Nursing Home")
+  plotmeans(100*(baseline.hospitalizations.nh-hospitalizations)/baseline.hospitalizations.nh~test.strategy,mss.nh[mss.nh$test.strategy!="none" & mss.nh$prop.testing==0.02,],
+            ci.label=TRUE,digits=1,gap=0,col="blue",add=TRUE,connect=FALSE,barcol="lightblue",pch=16,cex=0.8,n.label=FALSE,xaxt="n")
+  plotmeans(100*(baseline.hospitalizations.nh-hospitalizations)/baseline.hospitalizations.nh~test.strategy,mss.nh[mss.nh$test.strategy!="none" & mss.nh$prop.testing==0.05,],
+            ci.label=TRUE,digits=1,gap=0,col="green",add=TRUE,connect=FALSE,barcol="light green",pch=16,cex=0.8,n.label=FALSE,xaxt="n")
+  plotmeans(100*(baseline.hospitalizations.nh-hospitalizations)/baseline.hospitalizations.nh~test.strategy,mss.nh[mss.nh$test.strategy!="none" & mss.nh$prop.testing==0.10,],
+            ci.label=TRUE,digits=1,gap=0,col="red",add=TRUE,connect=FALSE,barcol="pink",pch=16,cex=0.8,n.label=FALSE,xaxt="n")
+
   ##deaths
   plotmeans(100*(baseline.deaths.d-deaths)/baseline.deaths.d~test.strategy,mss.d[mss.d$test.strategy!="none" & mss.d$prop.testing==0.01,],
-            connect=FALSE,barcol="gray",pch=16,cex=2.5,ylab="% Deaths Averted",xlab="Testing Strategy",main="Residence Hall",
-            n.label=FALSE,legends=c("antigen","PCR","Reflex to Antigen","Reflex Symp.
+            connect=FALSE,barcol="gray",pch=16,cex=0.8,ylab="% Deaths Averted",xlab="Testing Strategy",main="Residence Hall",
+            ci.label=TRUE,digits=1,gap=0,n.label=FALSE,legends=c("antigen","PCR","Reflex to Antigen","Reflex Symp.
 to PCR"),ylim=c(0,100))
   plotmeans(100*(baseline.deaths.d-deaths)/baseline.deaths.d~test.strategy,mss.d[mss.d$test.strategy!="none" & mss.d$prop.testing==0.02,],
-            col="blue",add=TRUE,connect=FALSE,barcol="lightblue",pch=16,cex=2.5,n.label=FALSE,xaxt="n")
+            ci.label=TRUE,digits=1,gap=0,col="blue",add=TRUE,connect=FALSE,barcol="lightblue",pch=16,cex=0.8,n.label=FALSE,xaxt="n")
   plotmeans(100*(baseline.deaths.d-deaths)/baseline.deaths.d~test.strategy,mss.d[mss.d$test.strategy!="none" & mss.d$prop.testing==0.05,],
-            col="green",add=TRUE,connect=FALSE,barcol="light green",pch=16,cex=2.5,n.label=FALSE,xaxt="n")
+            ci.label=TRUE,digits=1,gap=0,col="green",add=TRUE,connect=FALSE,barcol="light green",pch=16,cex=0.8,n.label=FALSE,xaxt="n")
   plotmeans(100*(baseline.deaths.d-deaths)/baseline.deaths.d~test.strategy,mss.d[mss.d$test.strategy!="none" & mss.d$prop.testing==0.10,],
-            col="red",add=TRUE,connect=FALSE,barcol="pink",pch=16,cex=2.5,n.label=FALSE,xaxt="n")
+            ci.label=TRUE,digits=1,gap=0,col="red",add=TRUE,connect=FALSE,barcol="pink",pch=16,cex=0.8,n.label=FALSE,xaxt="n")
 
   plotmeans(100*(baseline.deaths.nh-deaths)/baseline.deaths.nh~test.strategy,mss.nh[mss.nh$test.strategy!="none" & mss.nh$prop.testing==0.01,],
-            connect=FALSE,barcol="gray",pch=16,cex=2.5,ylab="% Deaths Averted",xlab="Testing Strategy",main="Nursing Home",
-            n.label=FALSE,legends=c("antigen","PCR","Reflex to Antigen","Reflex Symp.
+            connect=FALSE,barcol="gray",pch=16,cex=0.8,ylab="% Deaths Averted",xlab="Testing Strategy",main="Nursing Home",
+            ci.label=TRUE,digits=1,gap=0,n.label=FALSE,legends=c("antigen","PCR","Reflex to Antigen","Reflex Symp.
 to PCR"),ylim=c(0,100))
   plotmeans(100*(baseline.deaths.nh-deaths)/baseline.deaths.nh~test.strategy,mss.nh[mss.nh$test.strategy!="none" & mss.nh$prop.testing==0.02,],
-            col="blue",add=TRUE,connect=FALSE,barcol="lightblue",pch=16,cex=2.5,n.label=FALSE,xaxt="n")
+            ci.label=TRUE,digits=1,gap=0,col="blue",add=TRUE,connect=FALSE,barcol="lightblue",pch=16,cex=0.8,n.label=FALSE,xaxt="n")
   plotmeans(100*(baseline.deaths.nh-deaths)/baseline.deaths.nh~test.strategy,mss.nh[mss.nh$test.strategy!="none" & mss.nh$prop.testing==0.05,],
-            col="green",add=TRUE,connect=FALSE,barcol="light green",pch=16,cex=2.5,n.label=FALSE,xaxt="n")
+            ci.label=TRUE,digits=1,gap=0,col="green",add=TRUE,connect=FALSE,barcol="light green",pch=16,cex=0.8,n.label=FALSE,xaxt="n")
   plotmeans(100*(baseline.deaths.nh-deaths)/baseline.deaths.nh~test.strategy,mss.nh[mss.nh$test.strategy!="none" & mss.nh$prop.testing==0.10,],
-            col="red",add=TRUE,connect=FALSE,barcol="pink",pch=16,cex=2.5,n.label=FALSE,xaxt="n")
+            ci.label=TRUE,digits=1,gap=0,col="red",add=TRUE,connect=FALSE,barcol="pink",pch=16,cex=0.8,n.label=FALSE,xaxt="n")
 
 
   par(mfrow=c(1,1))

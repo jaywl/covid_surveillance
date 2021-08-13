@@ -4,46 +4,47 @@
 ###### Authors: Jay Love, Megan T. Wimmer, Damon J.A. Toth, Arthi Chandran, 
 ###### Dilip Makhija, Charles K. Cooper, Matthew H. Samore, Lindsay T. Keegan"
 
-temp_output_dir<-"/Users/temp_output/"## change to your directory of choice for output of function (if run)
-temp_data_dir<-"/Users/plos_data/" ## change to directory of data you downloaded from repo
-temp_plot_dir<-"/Users/plots/" ## change to a directory in which to save plots
+temp_output_dir<-"/Users/user/Desktop/temp_output/"## change to your directory of choice for output of function (if run)
+temp_plot_dir<-"/Users/user/Desktop/plots/" ## change to a directory in which to save plots
 
-#### to generate the data yourself (long runtime on normal computers):
-setwd(temp_output_dir) 
-cvtest_model(nstrats=4, ## number of testing strategies (4, for the manuscript)
-           nsims=1000, ## number of simulations to run
-           nsites=2, ## number of sites (e.g., nursing home and residence hall)
-           ntesting_proportions=5, ## number of surveillance daily testing proportions to simulate (separately)
-           testprops=c(0.0,0.01,0.02,0.05,0.10), ## proportions to simulate
-           quarantine_days=14, ## days of quarantine following a positive test
-           pcr.sensitivity=1.0, ## positive percent agreement wrt viral culture
-           pcr.specificity=0.955, ## negative percent agreement wrt viral culture
-           antigen.sensitivity=0.964, ## positive percent agreement wrt viral culture
-           antigen.specificity=0.987, ## negative percent agreement wrt viral culture
-           theta.pcr=(1/3), ## 1/days to return pcr test
-           theta.antigen=1, ## =1 is same day return of antigen tests
-           prob_symptomatic=0.6, ## proportion of infections that are symptomatic
-           ILI_incidence=0.02, ## standing level of non-covid ILI
-           waiting.reduction=0.50, ## reduction in mixing due to quarantine
-           include.rs=FALSE, ## set to true if recovered class positive tests should be "true" positives, not "false" positives (for exploring e.g., Fig S2) 
-           r.time=54, ## if include.rs==TRUE, post-recovery days before which a positive test is considered a true positive.
-           path=paste0(getwd(),"/"))## path to save output files
+#### to generate the data yourself, iterate the following function with parameters of your choice
+#### (ALERT long run time on normal computers, so uncomment to run):
 
-#### To use the data we generated:
-setwd(temp_data_dir) ## change to directory you downloaded
-fls<-list.files(pattern="sum4plots.")
-# length(fls) ##checks
-# fls
-s1<-read.csv(fls[1])
-s2<-read.csv(fls[2])
-s3<-read.csv(fls[3])
-s4<-read.csv(fls[4])
-s5<-read.csv(fls[5])
-s6<-read.csv(fls[6])
-s7<-read.csv(fls[7])
-s8<-read.csv(fls[8])
-s9<-read.csv(fls[9])
-s10<-read.csv(fls[10])
+# setwd(temp_output_dir) 
+# cvtest_model(nstrats=4, ## number of testing strategies (4, for the manuscript)
+#            nsims=1000, ## number of simulations to run
+#            nsites=2, ## number of sites (e.g., nursing home and residence hall)
+#            ntesting_proportions=5, ## number of surveillance daily testing proportions to simulate (separately)
+#            testprops=c(0.0,0.01,0.02,0.05,0.10), ## proportions to simulate
+#            quarantine_days=14, ## days of quarantine following a positive test
+#            pcr.sensitivity=1.0, ## positive percent agreement wrt viral culture
+#            pcr.specificity=0.955, ## negative percent agreement wrt viral culture
+#            antigen.sensitivity=0.964, ## positive percent agreement wrt viral culture
+#            antigen.specificity=0.987, ## negative percent agreement wrt viral culture
+#            theta.pcr=(1/3), ## 1/days to return pcr test
+#            theta.antigen=1, ## =1 is same day return of antigen tests
+#            prob_symptomatic=0.6, ## proportion of infections that are symptomatic
+#            ILI_incidence=0.02, ## standing level of non-covid ILI
+#            waiting.reduction=0.50, ## reduction in mixing due to quarantine
+#            include.rs=FALSE, ## set to true if recovered class positive tests should be "true" positives, not "false" positives (for exploring e.g., Fig S2) 
+#            r.time=54, ## if include.rs==TRUE, post-recovery days before which a positive test is considered a true positive.
+#            path=paste0(getwd(),"/"))## path to save output files
+
+
+#### To use the data we generated through simulations:
+## adjust line below to the figure you want (e.g., change "fig2" to "figS5")
+fignum<-"2" ## options: "3", "S2", "S3", ... , "S7"
+basedir<-paste0("https://raw.githubusercontent.com/jaywl/covid_surveillance/main/plos_data/fig",fignum,"data/")
+s1<-read.csv(paste0(basedir,"s1.csv"))
+s2<-read.csv(paste0(basedir,"s2.csv"))
+s3<-read.csv(paste0(basedir,"s3.csv"))
+s4<-read.csv(paste0(basedir,"s4.csv"))
+s5<-read.csv(paste0(basedir,"s5.csv"))
+s6<-read.csv(paste0(basedir,"s6.csv"))
+s7<-read.csv(paste0(basedir,"s7.csv"))
+s8<-read.csv(paste0(basedir,"s8.csv"))
+s9<-read.csv(paste0(basedir,"s9.csv"))
+s10<-read.csv(paste0(basedir,"s10.csv"))
 s11<-rbind(s1,s2,s3,s4,s5,s6,s7,s8,s9,s10)
 
 ## making figure 2 (and supplemental epidemic curve plots)
@@ -68,7 +69,7 @@ for(q in 1:length(stes)){
   }
 }
 
-## Define multiplot function (very useful, adapted from www.cookbook-R.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/)
+## Define multiplot function (very useful, adapted from www.cookbook-R.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/ )
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
   require(grid)
   plots <- c(list(...), plotlist)
@@ -128,20 +129,18 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 }
 
 ## making figure 3
-setwd(temp_data_dir)## change to directory you downloaded
-fls1<-list.files(pattern="sims_2021")
-length(fls1)
-fls1
-m1<-read.csv(fls1[1])
-m2<-read.csv(fls1[2])
-m3<-read.csv(fls1[3])
-m4<-read.csv(fls1[4])
-m5<-read.csv(fls1[5])
-m6<-read.csv(fls1[6])
-m7<-read.csv(fls1[7])
-m8<-read.csv(fls1[8])
-m9<-read.csv(fls1[9])
-m10<-read.csv(fls1[10])
+fignum<-"3" ## options: "3", "S2", "S3", ... , "S7"
+basedir<-paste0("https://raw.githubusercontent.com/jaywl/covid_surveillance/main/plos_data/fig",fignum,"data/")
+m1<-read.csv(paste0(basedir,"m1.csv"))
+m2<-read.csv(paste0(basedir,"m2.csv"))
+m3<-read.csv(paste0(basedir,"m3.csv"))
+m4<-read.csv(paste0(basedir,"m4.csv"))
+m5<-read.csv(paste0(basedir,"m5.csv"))
+m6<-read.csv(paste0(basedir,"m6.csv"))
+m7<-read.csv(paste0(basedir,"m7.csv"))
+m8<-read.csv(paste0(basedir,"m8.csv"))
+m9<-read.csv(paste0(basedir,"m9.csv"))
+m10<-read.csv(paste0(basedir,"m10.csv"))
 m11<-rbind(m1,m2,m3,m4,m5,m6,m7,m8,m9,m10)
 
 mss.d<-m11[m11$location=="dorm",]
@@ -246,7 +245,7 @@ to PCR"),ylim=c(0,100))
 }
 
 
-### per test reduction in infections ('C' panels in figures S2-S8)
+### per test reduction in infections ('C' panels in figures S2-S8) To make fig S8, use fig 3 data
 
 ## dorm
 mss.d$percentreduction[mss.d$test.strategy!="none"]<-(100*(baseline.infections.d-mss.d$infections[mss.d$test.strategy!="none"])/baseline.infections.d)
